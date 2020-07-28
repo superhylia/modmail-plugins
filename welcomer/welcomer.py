@@ -105,6 +105,7 @@ class Welcomer(commands.Cog):
                 message = self.format_message(member, config['message'], invite)
                 if message:
                     await channel.send(**message)
+                    await member.send(**message)
                 else:
                     await channel.send('Invalid welcome message')
             else:
