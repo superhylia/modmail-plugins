@@ -111,9 +111,9 @@ class Welcomer(commands.Cog):
             else:
                 print('Welcomer plugin not found: {getattr(channel, "id", None}')
 
-  @commands.has_permissions(manage_guild=True)
-  @commands.command()
-  async def dmwelcomer(self, ctx, message):
+    @commands.has_permissions(manage_guild=True)
+    @commands.command()
+    async def dmwelcomer(self, ctx, message):
         """Sets up welcome command for DMs. Check [here](https://github.com/fourjr/modmail-plugins/blob/master/welcomer/README.md)
         for complex usage.
         """
@@ -139,8 +139,8 @@ class Welcomer(commands.Cog):
         else:
             await ctx.send('Invalid welcome message syntax.')
 
-  @commands.Cog.listener()
-  async def on_member_join(self, member):
+     @commands.Cog.listener()
+     async def on_member_join(self, member):
         invite = await self.get_used_invite(member.guild)
         config = (await self.db.find_one({'_id': 'config'}))['welcomer']
         if config:
