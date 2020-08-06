@@ -139,8 +139,8 @@ class Welcomer(commands.Cog):
         else:
             await ctx.send('Invalid welcome message syntax.')
 
-     @commands.Cog.listener()
-     async def on_member_join(self, member):
+    @commands.Cog.listener()
+    async def on_member_join(self, member):
         invite = await self.get_used_invite(member.guild)
         config = (await self.db.find_one({'_id': 'config'}))['welcomer']
         if config:
