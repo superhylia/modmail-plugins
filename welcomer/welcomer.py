@@ -111,6 +111,49 @@ class Welcomer(commands.Cog):
             else:
                 print('Welcomer plugin not found: {getattr(channel, "id", None}')
 
+  @commands.has_permissions(manage_guild=True)
+    @commands.command()
+    async def dmwelcomer(self, ctx, message):
+        """Sets up welcome command for DMs. Check [here](https://github.com/fourjr/modmail-plugins/blob/master/welcomer/README.md)
+        for complex usage.
+        """
+        # Example usage: `dmwelcomer Hello {member.name}`
+        # """
+        if message.startswith('https://') or message.startswith('http://'):
+            # message is a URL
+            if message.startswith('https://hasteb.in/'):
+                message = 'https://hasteb.in/raw/' + message.split('/')[-1]
+
+            async with self.bot.session.get(message) as resp:
+                message = await resp.text()
+
+        formatted_message = self.format_message(ctx.author, message, SafeString('{invite}'))
+        if formatted_message:
+            await member.send(**formatted_message)
+            await self.db.find_one_and_update(
+                {'_id': 'config'},
+                {'$set': {'welcomer': {'channel': str(channel.id), 'message': message}}},
+                upsert=True
+            )
+            await ctx.send(f'Message sent to {channel.mention} for testing.\nNote: invites cannot be rendered in test message')
+        else:
+            await ctx.send('Invalid welcome message syntax.')
+
+    @commands.Cog.listener()
+    async def on_member_join(self, member):
+        invite = await self.get_used_invite(member.guild)
+        config = (await self.db.find_one({'_id': 'config'}))['welcomer']
+        if config:
+            channel = member.guild.get_channel(int(config['channel']))
+            if channel:
+                message = self.format_message(member, config['message'], invite)
+                if message:
+                    await member.send(**message)
+                else:
+                    await channel.send('Invalid welcome message')
+            else:
+                print('Welcomer plugin not found: {getattr(channel, "id", None}')
+
 
 def setup(bot):
     bot.add_cog(Welcomer(bot))
